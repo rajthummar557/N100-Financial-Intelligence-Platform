@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import  Path
-from normaliser import normalize_ticker,normalize_year
+from src.etl.normaliser import normalize_ticker,normalize_year
 DATA_DIR = Path("data/raw")
 def load_excel(file_path):
     

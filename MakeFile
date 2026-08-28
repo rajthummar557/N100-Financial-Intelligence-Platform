@@ -1,9 +1,12 @@
 load:
-	python src/etl/loader.py
+	python -m src.etl.loader
+
+validate:
+	python -m src.etl.validator
 
 ratios:
 	python src/analytics/ratios.py
- 
+
 test:
 	pytest tests/
 
