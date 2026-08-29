@@ -397,13 +397,16 @@ def check_exact_balance(df):
 
     #DQ-16
 def check_historical_coverage(df):
-
-        year_counts = (
-            df.groupby("company_id")["year"]
+        valid_years = df[
+       df["year"].astype(str).str.match(r"^\d{4}-(0[1-9]|1[0-2])$")
+       ]
+        
+        year_count = (
+            valid_years.groupby("company_id")["year"]
             .nunique()
         )
 
-        invalid = year_counts[year_counts < 5]
+        invalid = year_count[year_count < 5]
 
         if invalid.empty:
             return []
