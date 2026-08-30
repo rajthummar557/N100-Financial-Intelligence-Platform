@@ -261,3 +261,4 @@ c.company_name from companies c
 left join documents d on c.id = d.company_id
 where d.Annual_Report is null
 order by c.id;
+
