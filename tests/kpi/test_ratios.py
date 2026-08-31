@@ -4,7 +4,14 @@ from src.analytics.ratios import (
     return_on_equity,
     return_on_capital_employed,
     return_on_assets,
-    check_opm_mismatch
+    check_opm_mismatch,
+    debt_to_equity,
+    high_leverage_flag,
+    interest_coverage,
+    icr_label,
+    interest_coverage_warning,
+    net_debt,
+    asset_turnover
 )
 
 def test_net_profit_margin():
@@ -42,3 +49,41 @@ def test_opm_cross_check_mismatch():
 
 def test_return_on_assets_zero_assets():
     assert return_on_assets(200, 0) is None
+
+
+
+#day 9
+
+def test_debt_to_equity():
+    assert debt_to_equity(500, 100, 900) == 0.5
+
+
+def test_debt_to_equity_debt_free():
+    assert debt_to_equity(0, 100, 900) == 0
+
+
+def test_high_leverage_flag():
+    assert high_leverage_flag(6, "Industrials") is True
+
+
+def test_high_leverage_financials():
+    assert high_leverage_flag(6, "Financials") is False
+
+
+def test_interest_coverage_zero_interest():
+    assert interest_coverage(200, 20, 0) is None
+
+
+def test_icr_label_debt_free():
+    assert icr_label(0) == "Debt Free"
+
+
+def test_interest_coverage_warning():
+    assert interest_coverage_warning(1.2) is True
+
+
+def test_asset_turnover_zero_assets():
+    assert asset_turnover(1000, 0) is None
+
+def test_net_debt():
+    assert net_debt(500, 200) == 300
