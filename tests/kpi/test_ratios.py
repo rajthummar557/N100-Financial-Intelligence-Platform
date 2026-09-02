@@ -87,3 +87,123 @@ def test_asset_turnover_zero_assets():
 
 def test_net_debt():
     assert net_debt(500, 200) == 300
+
+
+# day 10
+
+import pandas as pd
+
+from src.analytics.cagr import calculate_cagr, matric_cagr
+
+
+def test_normal_cagr():
+    result, flag = calculate_cagr(100, 121, 2, 2)
+
+    assert round(result, 2) == 10.0
+    assert flag is None
+
+
+def test_zero_base():
+    result, flag = calculate_cagr(0, 100, 5, 5)
+
+    assert result is None
+    assert flag == "ZERO_BASE"
+
+
+def test_decline_to_loss():
+    result, flag = calculate_cagr(100, -50, 5, 5)
+
+    assert result is None
+    assert flag == "DECLINE_TO_LOSS"
+
+
+def test_turnaround():
+    result, flag = calculate_cagr(-100, 50, 5, 5)
+
+    assert result is None
+    assert flag == "TURNAROUND"
+
+
+def test_both_negative():
+    result, flag = calculate_cagr(-100, -50, 5, 5)
+
+    assert result is None
+    assert flag == "BOTH_NEGATIVE"
+
+
+def test_invalid_years():
+    result, flag = calculate_cagr(100, 200, 0)
+
+    assert result is None
+    assert flag == "INSUFFICIENT"
+
+
+def test_matric_cagr_exact_start():
+    df = pd.DataFrame({
+        "year": [
+            "2019-03",
+            "2020-03",
+            "2021-03",
+            "2022-03",
+            "2023-03",
+            "2024-03"
+        ],
+        "sales": [100, 110, 120, 130, 140, 150]
+    })
+
+    cagr, flag, start, end = matric_cagr(df, "sales", 5)
+
+    assert flag is None
+    assert start == "2019-03"
+    assert end == "2024-03"
+
+
+def test_matric_cagr_nearest_earlier():
+    df = pd.DataFrame({
+        "year": [
+            "2017-03",
+            "2018-03",
+            "2020-03",
+            "2021-03",
+            "2022-03",
+            "2023-03",
+            "2024-03"
+        ],
+        "sales": [100, 110, 120, 130, 140, 150, 160]
+    })
+
+    cagr, flag, start, end = matric_cagr(df, "sales", 5)
+
+    assert flag is None
+    assert start == "2018-03"
+    assert end == "2024-03"
+
+
+def test_matric_cagr_insufficient():
+    df = pd.DataFrame({
+        "year": ["2023-03", "2024-03"],
+        "sales": [100, 150]
+    })
+
+    cagr, flag, start, end = matric_cagr(df, "sales", 5)
+
+    assert cagr is None
+    assert flag == "INSUFFICIENT"
+
+
+def test_matric_cagr_ignores_parse_error():
+    df = pd.DataFrame({
+        "year": [
+            "2022-03",
+            "2023-03",
+            "2024-03",
+            "PARSE_ERROR"
+        ],
+        "sales": [100, 110, 120, 500]
+    })
+
+    cagr, flag, start, end = matric_cagr(df, "sales", 2)
+
+    assert flag is None
+    assert start == "2022-03"
+    assert end == "2024-03"
