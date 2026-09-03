@@ -29,7 +29,7 @@ def test_decline_to_loss():
     assert flag == "DECLINE_TO_LOSS"
 
 
-def test_turnaround():
+def test_turnaround(): 
     result, flag = calculate_cagr(-100, 50, 5, 5)
 
     assert result is None

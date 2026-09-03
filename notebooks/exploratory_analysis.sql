@@ -262,3 +262,90 @@ left join documents d on c.id = d.company_id
 where d.Annual_Report is null
 order by c.id;
 
+select p.company_id,p.year , count(*) as row_count from profitandloss p
+inner join balancesheet b on b.company_id = p.company_id
+and b.year = p.year
+inner join cashflow c on c.company_id = p.company_id
+and c.year = p.year 
+group by p.company_id,p.year 
+having count(*)>1
+order by row_count desc;
+
+SELECT company_id, year, COUNT(*) AS row_count
+FROM cashflow
+GROUP BY company_id, year
+HAVING COUNT(*) > 1
+ORDER BY row_count DESC;
+
+SELECT *
+FROM profitandloss
+WHERE company_id = 'PNB'
+  AND year = '2024-03';
+
+SELECT *
+FROM profitandloss
+WHERE company_id = 'ABB'
+  AND year = '2024-03';
+  SELECT *
+FROM cashflow
+WHERE company_id = 'PNB'
+  AND year = '2024-03';
+
+SELECT
+    p.company_id,
+    p.year,
+    p.sales,
+    p.net_profit,
+    p.operating_profit,
+    p.other_income,
+    p.interest,
+    p.depreciation,
+    p.eps,
+    p.dividend_payout,
+    b.equity_capital,
+    b.reserves,
+    b.investments,
+    b.borrowings,
+    b.total_assets,
+    c.operating_activity,
+    c.investing_activity,
+    c.financing_activity
+FROM
+(
+    SELECT
+        company_id,
+        year,
+        MAX(sales) AS sales,
+        MAX(net_profit) AS net_profit
+    FROM profitandloss
+    GROUP BY company_id, year
+) p
+
+INNER JOIN
+(
+    SELECT
+        company_id,
+        year,
+        MAX(equity_capital) AS equity_capital,
+        MAX(reserves) AS reserves,
+        MAX(borrowings) AS borrowings,
+        MAX(total_assets) AS total_assets
+    FROM balancesheet
+    GROUP BY company_id, year
+) b
+    ON b.company_id = p.company_id
+   AND b.year = p.year
+
+INNER JOIN
+(
+    SELECT
+        company_id,
+        year,
+        MAX(operating_activity) AS operating_activity,
+        MAX(investing_activity) AS investing_activity,
+        MAX(financing_activity) AS financing_activity
+    FROM cashflow
+    GROUP BY company_id, year
+) c
+    ON c.company_id = p.company_id
+   AND c.year = p.year;
